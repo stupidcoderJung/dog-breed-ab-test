@@ -1,3 +1,4 @@
+use bytes::Buf;
 use warp::{Filter, Reply};
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -165,8 +166,8 @@ async fn handle_compare(
         let mut field = field_result;
         while let Some(chunk_result) = field.data().await {
             match chunk_result {
-                Ok(chunk) => {
-                    image_data.extend_from_slice(&chunk);
+                Ok(mut chunk) => {
+                    image_data.extend_from_slice(chunk.chunk());
                 }
                 Err(_) => return Err(warp::reject::custom(MultipartError)),
             }
