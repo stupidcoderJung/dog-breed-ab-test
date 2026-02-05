@@ -245,3 +245,34 @@ Issues와 Pull Requests는 언제나 환영합니다!
 ---
 
 **Created by Telecro 🖤**
+
+## 🚀 Rust 버전 (최적화)
+
+**88% 메모리 절감!** Python 버전 (36MB) → Rust 버전 (4.3MB)
+
+### 빌드 방법
+
+```bash
+cargo build --release
+```
+
+### 실행
+
+```bash
+./target/release/dog-breed-ab-test
+```
+
+또는 백그라운드:
+```bash
+nohup ./target/release/dog-breed-ab-test > server.log 2>&1 &
+```
+
+### 성능 비교
+
+| 버전 | 메모리 | 개선율 |
+|------|--------|---------|
+| Python (Flask) | 36.0 MB | - |
+| **Rust (actix-web)** | **4.3 MB** | **88% ↓** |
+
+자세한 내용은 [PERFORMANCE.md](PERFORMANCE.md)를 참조하세요.
+

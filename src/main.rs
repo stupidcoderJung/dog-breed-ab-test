@@ -45,6 +45,12 @@ struct CompareResponse {
     comparison: Comparison,
 }
 
+// Custom error type for multipart handling
+#[derive(Debug)]
+struct MultipartError;
+
+impl warp::reject::Reject for MultipartError {}
+
 #[derive(Clone)]
 struct AppState {
     model_a_url: String,
@@ -147,21 +153,22 @@ fn compare_predictions(result_a: &ModelResult, result_b: &ModelResult) -> Compar
 }
 
 async fn handle_compare(
-    mut form: warp::multipart::FormData,
+    form: warp::multipart::FormData,
     state: Arc<RwLock<AppState>>,
 ) -> Result<impl Reply, warp::Rejection> {
-    use futures_util::StreamExt;
+    use futures_util::TryStreamExt;
 
     let mut image_data = bytes::BytesMut::new();
 
-    while let Some(field_result) = form.try_next().await.map_err(|_| warp::reject())? {
+    let mut field_stream = form;
+    while let Some(field_result) = field_stream.try_next().await.map_err(|_| warp::reject::custom(MultipartError))? {
         let mut field = field_result;
         while let Some(chunk_result) = field.data().await {
             match chunk_result {
                 Ok(chunk) => {
                     image_data.extend_from_slice(&chunk);
                 }
-                Err(_) => return Err(warp::reject()),
+                Err(_) => return Err(warp::reject::custom(MultipartError)),
             }
         }
     }

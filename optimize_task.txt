@@ -1,0 +1,9 @@
+현재 메모리 사용량: 4.3MB
+목표: 3.6MB 이하
+
+최적화 포인트:
+1. actix-web 대신 더 경량 프레임워크 사용 (warp 또는 tiny-http)
+2. tokio runtime 설정 최적화
+3. 불필요한 의존성 제거
+
+Cargo.toml과 src/main.rs를 최적화해주세요.
